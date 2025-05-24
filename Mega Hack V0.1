@@ -1,17 +1,25 @@
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 
 -- GUI Settings
 local GUI_WIDTH = 220
-local GUI_HEIGHT = 280
-local GUI_SPACING = 20 -- Spacing between GUIs
+local GUI_HEIGHT = 460
+local GUI_SPACING = 20
+
+-- Fly Variables
+local flying = false
+local flySpeed = 50
+local bodyVelocity = nil
+local currentVelocity = Vector3.new(0, 0, 0)
+local targetVelocity = Vector3.new(0, 0, 0)
 
 -- Function to find free position
 local function findFreePosition()
     local screenSize = workspace.CurrentCamera.ViewportSize
     local occupiedPositions = {}
     
-    -- Collect all occupied positions
     for _, gui in ipairs(player.PlayerGui:GetChildren()) do
         if gui:IsA("ScreenGui") and gui:GetAttribute("IsSpeedGUI") then
             local frame = gui:FindFirstChild("MainFrame")
@@ -25,7 +33,6 @@ local function findFreePosition()
         end
     end
     
-    -- Search for free position
     local startX = 50
     local startY = 50
     local currentX = startX
@@ -41,13 +48,11 @@ local function findFreePosition()
         return true
     end
     
-    -- Search for free space in grid
     for row = 0, 10 do
         for col = 0, 10 do
             currentX = startX + col * (GUI_WIDTH + GUI_SPACING)
             currentY = startY + row * (GUI_HEIGHT + GUI_SPACING)
             
-            -- Check if GUI fits on screen
             if currentX + GUI_WIDTH < screenSize.X and currentY + GUI_HEIGHT < screenSize.Y then
                 if isPositionFree(currentX, currentY) then
                     return UDim2.new(0, currentX, 0, currentY)
@@ -56,7 +61,6 @@ local function findFreePosition()
         end
     end
     
-    -- If no free space found, use random position
     return UDim2.new(0, math.random(50, screenSize.X - GUI_WIDTH - 50), 0, math.random(50, screenSize.Y - GUI_HEIGHT - 50))
 end
 
@@ -93,24 +97,22 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.DisplayOrder = 100
 ScreenGui:SetAttribute("IsSpeedGUI", true)
 
--- Main Frame setup (center of screen, initially hidden)
+-- Main Frame setup
 local Frame = Instance.new("Frame")
 Frame.Name = "MainFrame"
 Frame.Parent = ScreenGui
 Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 45)
 Frame.BackgroundTransparency = 0.15
-Frame.Position = UDim2.new(0.5, -GUI_WIDTH/2, 0.5, -GUI_HEIGHT/2) -- Center of screen
+Frame.Position = UDim2.new(0.5, -GUI_WIDTH/2, 0.5, -GUI_HEIGHT/2)
 Frame.Size = UDim2.new(0, GUI_WIDTH, 0, GUI_HEIGHT)
-Frame.Visible = false -- Initially hidden
+Frame.Visible = false
 Frame.ZIndex = 10
 Frame.BorderSizePixel = 0
 
--- Rounded corners for Frame
 local FrameUICorner = Instance.new("UICorner")
 FrameUICorner.CornerRadius = UDim.new(0, 12)
 FrameUICorner.Parent = Frame
 
--- White stroke for Frame
 local FrameUIStroke = Instance.new("UIStroke")
 FrameUIStroke.Thickness = 2
 FrameUIStroke.Color = Color3.fromRGB(255, 255, 255)
@@ -250,11 +252,94 @@ JumpButtonStroke.Color = Color3.fromRGB(255, 255, 255)
 JumpButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 JumpButtonStroke.Parent = ApplyJumpButton
 
+-- Fly Speed Label
+local FlySpeedLabel = Instance.new("TextLabel")
+FlySpeedLabel.Parent = Frame
+FlySpeedLabel.Size = UDim2.new(1, -20, 0, 20)
+FlySpeedLabel.Position = UDim2.new(0, 10, 0, 245)
+FlySpeedLabel.BackgroundTransparency = 1
+FlySpeedLabel.Text = "Fly Speed:"
+FlySpeedLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+FlySpeedLabel.TextSize = 13
+FlySpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+FlySpeedLabel.ZIndex = 11
+FlySpeedLabel.Font = Enum.Font.Gotham
+
+-- Fly Speed Input TextBox
+local FlySpeedInput = Instance.new("TextBox")
+FlySpeedInput.Parent = Frame
+FlySpeedInput.Size = UDim2.new(1, -20, 0, 30)
+FlySpeedInput.Position = UDim2.new(0, 10, 0, 270)
+FlySpeedInput.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+FlySpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+FlySpeedInput.Text = "50"
+FlySpeedInput.PlaceholderText = "Enter fly speed"
+FlySpeedInput.TextSize = 14
+FlySpeedInput.ZIndex = 11
+FlySpeedInput.BorderSizePixel = 0
+FlySpeedInput.Font = Enum.Font.Gotham
+
+local FlySpeedInputCorner = Instance.new("UICorner")
+FlySpeedInputCorner.CornerRadius = UDim.new(0, 6)
+FlySpeedInputCorner.Parent = FlySpeedInput
+
+local FlySpeedInputStroke = Instance.new("UIStroke")
+FlySpeedInputStroke.Thickness = 1
+FlySpeedInputStroke.Color = Color3.fromRGB(255, 255, 255)
+FlySpeedInputStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+FlySpeedInputStroke.Parent = FlySpeedInput
+
+-- Apply Fly Speed Button
+local ApplyFlySpeedButton = Instance.new("TextButton")
+ApplyFlySpeedButton.Parent = Frame
+ApplyFlySpeedButton.Size = UDim2.new(1, -20, 0, 35)
+ApplyFlySpeedButton.Position = UDim2.new(0, 10, 0, 305)
+ApplyFlySpeedButton.Text = "Apply Fly Speed"
+ApplyFlySpeedButton.BackgroundColor3 = Color3.fromRGB(120, 80, 255)
+ApplyFlySpeedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ApplyFlySpeedButton.TextSize = 14
+ApplyFlySpeedButton.ZIndex = 11
+ApplyFlySpeedButton.BorderSizePixel = 0
+ApplyFlySpeedButton.Font = Enum.Font.GothamSemibold
+
+local FlySpeedButtonCorner = Instance.new("UICorner")
+FlySpeedButtonCorner.CornerRadius = UDim.new(0, 8)
+FlySpeedButtonCorner.Parent = ApplyFlySpeedButton
+
+local FlySpeedButtonStroke = Instance.new("UIStroke")
+FlySpeedButtonStroke.Thickness = 1
+FlySpeedButtonStroke.Color = Color3.fromRGB(255, 255, 255)
+FlySpeedButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+FlySpeedButtonStroke.Parent = ApplyFlySpeedButton
+
+-- Fly Button
+local FlyButton = Instance.new("TextButton")
+FlyButton.Parent = Frame
+FlyButton.Size = UDim2.new(1, -20, 0, 35)
+FlyButton.Position = UDim2.new(0, 10, 0, 350)
+FlyButton.Text = "Enable Fly"
+FlyButton.BackgroundColor3 = Color3.fromRGB(160, 80, 255)
+FlyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+FlyButton.TextSize = 14
+FlyButton.ZIndex = 11
+FlyButton.BorderSizePixel = 0
+FlyButton.Font = Enum.Font.GothamSemibold
+
+local FlyButtonCorner = Instance.new("UICorner")
+FlyButtonCorner.CornerRadius = UDim.new(0, 8)
+FlyButtonCorner.Parent = FlyButton
+
+local FlyButtonStroke = Instance.new("UIStroke")
+FlyButtonStroke.Thickness = 1
+FlyButtonStroke.Color = Color3.fromRGB(255, 255, 255)
+FlyButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+FlyButtonStroke.Parent = FlyButton
+
 -- Delete GUI Button
 local DeleteGuiButton = Instance.new("TextButton")
 DeleteGuiButton.Parent = Frame
-DeleteGuiButton.Size = UDim2.new(1, -20, 0, 30)
-DeleteGuiButton.Position = UDim2.new(0, 10, 0, 240)
+DeleteGuiButton.Size = UDim2.new(1, -20, 0, 35)
+DeleteGuiButton.Position = UDim2.new(0, 10, 0, 395)
 DeleteGuiButton.Text = "Close Script"
 DeleteGuiButton.BackgroundColor3 = Color3.fromRGB(200, 80, 80)
 DeleteGuiButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -273,11 +358,11 @@ DeleteButtonStroke.Color = Color3.fromRGB(255, 255, 255)
 DeleteButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 DeleteButtonStroke.Parent = DeleteGuiButton
 
--- Square Toggle Button (top-left corner)
+-- Square Toggle Button
 local ToggleGuiButton = Instance.new("TextButton")
 ToggleGuiButton.Parent = ScreenGui
-ToggleGuiButton.Size = UDim2.new(0, 50, 0, 50) -- Square shape
-ToggleGuiButton.Position = UDim2.new(0, 10, 0, 10) -- Top-left corner
+ToggleGuiButton.Size = UDim2.new(0, 50, 0, 50)
+ToggleGuiButton.Position = UDim2.new(0, 10, 0, 10)
 ToggleGuiButton.Text = "MENU"
 ToggleGuiButton.BackgroundColor3 = Color3.fromRGB(70, 130, 255)
 ToggleGuiButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -286,27 +371,155 @@ ToggleGuiButton.ZIndex = 12
 ToggleGuiButton.BorderSizePixel = 0
 ToggleGuiButton.Font = Enum.Font.GothamBold
 
--- White stroke for toggle button
 local ToggleButtonStroke = Instance.new("UIStroke")
 ToggleButtonStroke.Thickness = 2
 ToggleButtonStroke.Color = Color3.fromRGB(255, 255, 255)
 ToggleButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 ToggleButtonStroke.Parent = ToggleGuiButton
 
--- No corner radius for square button
-
--- Version Label (bottom-right corner)
+-- Version Label
 local VersionLabel = Instance.new("TextLabel")
 VersionLabel.Parent = ScreenGui
 VersionLabel.Size = UDim2.new(0, 40, 0, 15)
-VersionLabel.Position = UDim2.new(1, -45, 1, -20) -- Bottom-right corner
+VersionLabel.Position = UDim2.new(1, -45, 1, -20)
 VersionLabel.BackgroundTransparency = 1
-VersionLabel.Text = "V0.1"
+VersionLabel.Text = "V0.3"
 VersionLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
 VersionLabel.TextSize = 10
 VersionLabel.TextXAlignment = Enum.TextXAlignment.Right
 VersionLabel.ZIndex = 12
 VersionLabel.Font = Enum.Font.Gotham
+
+-- FLY FUNCTIONS
+local function startFly()
+    local character = player.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") or not character:FindFirstChild("Humanoid") then 
+        warn("Failed to start fly: Character, Humanoid, or HumanoidRootPart missing")
+        return 
+    end
+    
+    local humanoidRootPart = character.HumanoidRootPart
+    local humanoid = character.Humanoid
+    
+    print("Starting fly for character:", character.Name)
+    
+    -- Clean up any existing physics components
+    if bodyVelocity then bodyVelocity:Destroy() end
+    
+    -- Create BodyVelocity for movement
+    bodyVelocity = Instance.new("BodyVelocity")
+    bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+    bodyVelocity.Parent = humanoidRootPart
+    
+    -- Set humanoid state for flying
+    humanoid.PlatformStand = true
+    humanoid.Sit = false
+    humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+    
+    flying = true
+    currentVelocity = Vector3.new(0, 0, 0)
+    targetVelocity = Vector3.new(0, 0, 0)
+end
+
+local function stopFly()
+    local character = player.Character
+    if character and character:FindFirstChild("Humanoid") then
+        local humanoid = character.Humanoid
+        humanoid.PlatformStand = false
+        humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+    end
+    
+    if bodyVelocity then
+        bodyVelocity:Destroy()
+        bodyVelocity = nil
+    end
+    
+    flying = false
+    currentVelocity = Vector3.new(0, 0, 0)
+    targetVelocity = Vector3.new(0, 0, 0)
+end
+
+local function lerp(a, b, t)
+    return a + (b - a) * t
+end
+
+local function lerpVector3(a, b, t)
+    return Vector3.new(
+        lerp(a.X, b.X, t),
+        lerp(a.Y, b.Y, t),
+        lerp(a.Z, b.Z, t)
+    )
+end
+
+local function updateFlyMovement()
+    if not flying or not bodyVelocity or not player.Character then return end
+    
+    local camera = workspace.CurrentCamera
+    local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return end
+    
+    local moveVector = Vector3.new(0, 0, 0)
+    
+    -- Use camera's LookVector for forward/backward movement
+    if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+        moveVector = moveVector + camera.CFrame.LookVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+        moveVector = moveVector - camera.CFrame.LookVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+        moveVector = moveVector - camera.CFrame.RightVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+        moveVector = moveVector + camera.CFrame.RightVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+        moveVector = moveVector + Vector3.new(0, 1, 0)
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+        moveVector = moveVector - Vector3.new(0, 1, 0)
+    end
+    
+    -- Normalize movement vector to maintain consistent speed
+    if moveVector.Magnitude > 0 then
+        moveVector = moveVector.Unit
+    end
+    
+    -- Apply fly speed
+    targetVelocity = moveVector * flySpeed
+    
+    -- Smooth velocity interpolation
+    local deltaTime = RunService.Heartbeat:Wait()
+    local smoothingFactor = math.min(deltaTime * 10, 1) -- Increased smoothing for responsiveness
+    currentVelocity = lerpVector3(currentVelocity, targetVelocity, smoothingFactor)
+    
+    -- Apply velocity
+    bodyVelocity.Velocity = currentVelocity
+end
+
+local flyConnection = nil
+
+local function startFlyLoop()
+    if flyConnection then
+        flyConnection:Disconnect()
+    end
+    
+    flyConnection = RunService.Heartbeat:Connect(function()
+        if flying then
+            updateFlyMovement()
+        end
+    end)
+end
+
+local function stopFlyLoop()
+    if flyConnection then
+        flyConnection:Disconnect()
+        flyConnection = nil
+    end
+end
+
+startFlyLoop()
 
 -- Function to apply entered speed
 ApplySpeedButton.MouseButton1Click:Connect(function()
@@ -342,8 +555,40 @@ ApplyJumpButton.MouseButton1Click:Connect(function()
     end
 end)
 
+-- Function to apply entered fly speed
+ApplyFlySpeedButton.MouseButton1Click:Connect(function()
+    local flySpeedValue = tonumber(FlySpeedInput.Text)
+    if flySpeedValue then
+        flySpeed = flySpeedValue
+        ApplyFlySpeedButton.Text = "Applied: " .. flySpeedValue
+        wait(1)
+        ApplyFlySpeedButton.Text = "Apply Fly Speed"
+    else
+        FlySpeedInput.Text = "Error! Invalid input"
+        wait(1)
+        FlySpeedInput.Text = "50"
+    end
+end)
+
+-- Fly Button Function
+FlyButton.MouseButton1Click:Connect(function()
+    if not flying then
+        startFly()
+        FlyButton.Text = "Disable Fly"
+        FlyButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+    else
+        stopFly()
+        FlyButton.Text = "Enable Fly"
+        FlyButton.BackgroundColor3 = Color3.fromRGB(160, 80, 255)
+    end
+end)
+
 -- Function to delete GUI
 DeleteGuiButton.MouseButton1Click:Connect(function()
+    if flying then
+        stopFly()
+    end
+    stopFlyLoop()
     ScreenGui:Destroy()
 end)
 
@@ -376,12 +621,21 @@ Frame.InputChanged:Connect(function(input)
     if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
         local delta = input.Position - dragStart
         Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        -- Toggle button stays in place (top-left corner)
     end
 end)
 
 Frame.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = false
+    end
+end)
+
+-- Clean up fly when character respawns
+player.CharacterAdded:Connect(function()
+    if flying then
+        wait(0.5)
+        stopFly()
+        FlyButton.Text = "Enable Fly"
+        FlyButton.BackgroundColor3 = Color3.fromRGB(160, 80, 255)
     end
 end)
