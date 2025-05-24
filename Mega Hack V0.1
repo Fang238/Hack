@@ -1,0 +1,375 @@
+-- Script for Roblox Studio, place in StarterGui (LocalScript)
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- GUI Settings
+local GUI_WIDTH = 220
+local GUI_HEIGHT = 280
+local GUI_SPACING = 20 -- Spacing between GUIs
+
+-- Function to find free position
+local function findFreePosition()
+    local screenSize = workspace.CurrentCamera.ViewportSize
+    local occupiedPositions = {}
+    
+    -- Collect all occupied positions
+    for _, gui in ipairs(player.PlayerGui:GetChildren()) do
+        if gui:IsA("ScreenGui") and gui:GetAttribute("IsSpeedGUI") then
+            local frame = gui:FindFirstChild("MainFrame")
+            if frame then
+                local pos = frame.Position
+                table.insert(occupiedPositions, {
+                    X = pos.X.Scale * screenSize.X + pos.X.Offset,
+                    Y = pos.Y.Scale * screenSize.Y + pos.Y.Offset
+                })
+            end
+        end
+    end
+    
+    -- Search for free position
+    local startX = 50
+    local startY = 50
+    local currentX = startX
+    local currentY = startY
+    
+    local function isPositionFree(x, y)
+        for _, pos in ipairs(occupiedPositions) do
+            if math.abs(pos.X - x) < GUI_WIDTH + GUI_SPACING and 
+               math.abs(pos.Y - y) < GUI_HEIGHT + GUI_SPACING then
+                return false
+            end
+        end
+        return true
+    end
+    
+    -- Search for free space in grid
+    for row = 0, 10 do
+        for col = 0, 10 do
+            currentX = startX + col * (GUI_WIDTH + GUI_SPACING)
+            currentY = startY + row * (GUI_HEIGHT + GUI_SPACING)
+            
+            -- Check if GUI fits on screen
+            if currentX + GUI_WIDTH < screenSize.X and currentY + GUI_HEIGHT < screenSize.Y then
+                if isPositionFree(currentX, currentY) then
+                    return UDim2.new(0, currentX, 0, currentY)
+                end
+            end
+        end
+    end
+    
+    -- If no free space found, use random position
+    return UDim2.new(0, math.random(50, screenSize.X - GUI_WIDTH - 50), 0, math.random(50, screenSize.Y - GUI_HEIGHT - 50))
+end
+
+-- Function to completely clean up all existing GUIs
+local function cleanupExistingGUIs()
+    for _, gui in ipairs(player.PlayerGui:GetChildren()) do
+        if gui:IsA("ScreenGui") and (gui.Name:find("SpeedToggleGui") or gui:GetAttribute("IsSpeedGUI")) then
+            gui:Destroy()
+        end
+    end
+    wait(0.1)
+end
+
+-- Clean up existing GUIs only if there are more than 3
+local speedGUICount = 0
+for _, gui in ipairs(player.PlayerGui:GetChildren()) do
+    if gui:IsA("ScreenGui") and gui:GetAttribute("IsSpeedGUI") then
+        speedGUICount = speedGUICount + 1
+    end
+end
+
+if speedGUICount > 3 then
+    cleanupExistingGUIs()
+end
+
+-- Unique name for our GUI
+local GUI_NAME = "SpeedToggleGui_" .. tostring(tick())
+
+-- Create new ScreenGui with unique name
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = player.PlayerGui
+ScreenGui.Name = GUI_NAME
+ScreenGui.ResetOnSpawn = false
+ScreenGui.DisplayOrder = 100
+ScreenGui:SetAttribute("IsSpeedGUI", true)
+
+-- Main Frame setup (center of screen, initially hidden)
+local Frame = Instance.new("Frame")
+Frame.Name = "MainFrame"
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 45)
+Frame.BackgroundTransparency = 0.15
+Frame.Position = UDim2.new(0.5, -GUI_WIDTH/2, 0.5, -GUI_HEIGHT/2) -- Center of screen
+Frame.Size = UDim2.new(0, GUI_WIDTH, 0, GUI_HEIGHT)
+Frame.Visible = false -- Initially hidden
+Frame.ZIndex = 10
+Frame.BorderSizePixel = 0
+
+-- Rounded corners for Frame
+local FrameUICorner = Instance.new("UICorner")
+FrameUICorner.CornerRadius = UDim.new(0, 12)
+FrameUICorner.Parent = Frame
+
+-- White stroke for Frame
+local FrameUIStroke = Instance.new("UIStroke")
+FrameUIStroke.Thickness = 2
+FrameUIStroke.Color = Color3.fromRGB(255, 255, 255)
+FrameUIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+FrameUIStroke.Parent = Frame
+
+-- GUI Title
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Parent = Frame
+TitleLabel.Size = UDim2.new(1, -20, 0, 25)
+TitleLabel.Position = UDim2.new(0, 10, 0, 5)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "Character Control"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.TextSize = 16
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Center
+TitleLabel.ZIndex = 11
+TitleLabel.Font = Enum.Font.GothamBold
+
+-- Walk Speed Label
+local SpeedLabel = Instance.new("TextLabel")
+SpeedLabel.Parent = Frame
+SpeedLabel.Size = UDim2.new(1, -20, 0, 20)
+SpeedLabel.Position = UDim2.new(0, 10, 0, 35)
+SpeedLabel.BackgroundTransparency = 1
+SpeedLabel.Text = "Walk Speed:"
+SpeedLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+SpeedLabel.TextSize = 13
+SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+SpeedLabel.ZIndex = 11
+SpeedLabel.Font = Enum.Font.Gotham
+
+-- Speed Input TextBox
+local SpeedInput = Instance.new("TextBox")
+SpeedInput.Parent = Frame
+SpeedInput.Size = UDim2.new(1, -20, 0, 30)
+SpeedInput.Position = UDim2.new(0, 10, 0, 60)
+SpeedInput.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+SpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedInput.Text = "16"
+SpeedInput.PlaceholderText = "Enter speed"
+SpeedInput.TextSize = 14
+SpeedInput.ZIndex = 11
+SpeedInput.BorderSizePixel = 0
+SpeedInput.Font = Enum.Font.Gotham
+
+local SpeedInputCorner = Instance.new("UICorner")
+SpeedInputCorner.CornerRadius = UDim.new(0, 6)
+SpeedInputCorner.Parent = SpeedInput
+
+local SpeedInputStroke = Instance.new("UIStroke")
+SpeedInputStroke.Thickness = 1
+SpeedInputStroke.Color = Color3.fromRGB(255, 255, 255)
+SpeedInputStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+SpeedInputStroke.Parent = SpeedInput
+
+-- Apply Speed Button
+local ApplySpeedButton = Instance.new("TextButton")
+ApplySpeedButton.Parent = Frame
+ApplySpeedButton.Size = UDim2.new(1, -20, 0, 35)
+ApplySpeedButton.Position = UDim2.new(0, 10, 0, 95)
+ApplySpeedButton.Text = "Apply Speed"
+ApplySpeedButton.BackgroundColor3 = Color3.fromRGB(40, 120, 255)
+ApplySpeedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ApplySpeedButton.TextSize = 14
+ApplySpeedButton.ZIndex = 11
+ApplySpeedButton.BorderSizePixel = 0
+ApplySpeedButton.Font = Enum.Font.GothamSemibold
+
+local SpeedButtonCorner = Instance.new("UICorner")
+SpeedButtonCorner.CornerRadius = UDim.new(0, 8)
+SpeedButtonCorner.Parent = ApplySpeedButton
+
+local SpeedButtonStroke = Instance.new("UIStroke")
+SpeedButtonStroke.Thickness = 1
+SpeedButtonStroke.Color = Color3.fromRGB(255, 255, 255)
+SpeedButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+SpeedButtonStroke.Parent = ApplySpeedButton
+
+-- Jump Power Label
+local JumpLabel = Instance.new("TextLabel")
+JumpLabel.Parent = Frame
+JumpLabel.Size = UDim2.new(1, -20, 0, 20)
+JumpLabel.Position = UDim2.new(0, 10, 0, 140)
+JumpLabel.BackgroundTransparency = 1
+JumpLabel.Text = "Jump Power:"
+JumpLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+JumpLabel.TextSize = 13
+JumpLabel.TextXAlignment = Enum.TextXAlignment.Left
+JumpLabel.ZIndex = 11
+JumpLabel.Font = Enum.Font.Gotham
+
+-- Jump Power Input TextBox
+local JumpInput = Instance.new("TextBox")
+JumpInput.Parent = Frame
+JumpInput.Size = UDim2.new(1, -20, 0, 30)
+JumpInput.Position = UDim2.new(0, 10, 0, 165)
+JumpInput.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+JumpInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+JumpInput.Text = "50"
+JumpInput.PlaceholderText = "Enter jump power"
+JumpInput.TextSize = 14
+JumpInput.ZIndex = 11
+JumpInput.BorderSizePixel = 0
+JumpInput.Font = Enum.Font.Gotham
+
+local JumpInputCorner = Instance.new("UICorner")
+JumpInputCorner.CornerRadius = UDim.new(0, 6)
+JumpInputCorner.Parent = JumpInput
+
+local JumpInputStroke = Instance.new("UIStroke")
+JumpInputStroke.Thickness = 1
+JumpInputStroke.Color = Color3.fromRGB(255, 255, 255)
+JumpInputStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+JumpInputStroke.Parent = JumpInput
+
+-- Apply Jump Power Button
+local ApplyJumpButton = Instance.new("TextButton")
+ApplyJumpButton.Parent = Frame
+ApplyJumpButton.Size = UDim2.new(1, -20, 0, 35)
+ApplyJumpButton.Position = UDim2.new(0, 10, 0, 200)
+ApplyJumpButton.Text = "Apply Jump"
+ApplyJumpButton.BackgroundColor3 = Color3.fromRGB(40, 200, 120)
+ApplyJumpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ApplyJumpButton.TextSize = 14
+ApplyJumpButton.ZIndex = 11
+ApplyJumpButton.BorderSizePixel = 0
+ApplyJumpButton.Font = Enum.Font.GothamSemibold
+
+local JumpButtonCorner = Instance.new("UICorner")
+JumpButtonCorner.CornerRadius = UDim.new(0, 8)
+JumpButtonCorner.Parent = ApplyJumpButton
+
+local JumpButtonStroke = Instance.new("UIStroke")
+JumpButtonStroke.Thickness = 1
+JumpButtonStroke.Color = Color3.fromRGB(255, 255, 255)
+JumpButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+JumpButtonStroke.Parent = ApplyJumpButton
+
+-- Delete GUI Button
+local DeleteGuiButton = Instance.new("TextButton")
+DeleteGuiButton.Parent = Frame
+DeleteGuiButton.Size = UDim2.new(1, -20, 0, 30)
+DeleteGuiButton.Position = UDim2.new(0, 10, 0, 240)
+DeleteGuiButton.Text = "Close Script"
+DeleteGuiButton.BackgroundColor3 = Color3.fromRGB(200, 80, 80)
+DeleteGuiButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+DeleteGuiButton.TextSize = 13
+DeleteGuiButton.ZIndex = 11
+DeleteGuiButton.BorderSizePixel = 0
+DeleteGuiButton.Font = Enum.Font.Gotham
+
+local DeleteButtonCorner = Instance.new("UICorner")
+DeleteButtonCorner.CornerRadius = UDim.new(0, 8)
+DeleteButtonCorner.Parent = DeleteGuiButton
+
+local DeleteButtonStroke = Instance.new("UIStroke")
+DeleteButtonStroke.Thickness = 1
+DeleteButtonStroke.Color = Color3.fromRGB(255, 255, 255)
+DeleteButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+DeleteButtonStroke.Parent = DeleteGuiButton
+
+-- Square Toggle Button (top-left corner)
+local ToggleGuiButton = Instance.new("TextButton")
+ToggleGuiButton.Parent = ScreenGui
+ToggleGuiButton.Size = UDim2.new(0, 50, 0, 50) -- Square shape
+ToggleGuiButton.Position = UDim2.new(0, 10, 0, 10) -- Top-left corner
+ToggleGuiButton.Text = "MENU"
+ToggleGuiButton.BackgroundColor3 = Color3.fromRGB(70, 130, 255)
+ToggleGuiButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleGuiButton.TextSize = 10
+ToggleGuiButton.ZIndex = 12
+ToggleGuiButton.BorderSizePixel = 0
+ToggleGuiButton.Font = Enum.Font.GothamBold
+
+-- White stroke for toggle button
+local ToggleButtonStroke = Instance.new("UIStroke")
+ToggleButtonStroke.Thickness = 2
+ToggleButtonStroke.Color = Color3.fromRGB(255, 255, 255)
+ToggleButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+ToggleButtonStroke.Parent = ToggleGuiButton
+
+-- No corner radius for square button
+
+-- Function to apply entered speed
+ApplySpeedButton.MouseButton1Click:Connect(function()
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        local speed = tonumber(SpeedInput.Text)
+        if speed and speed > 0 and speed <= 1000 then
+            player.Character.Humanoid.WalkSpeed = speed
+            ApplySpeedButton.Text = "Applied: " .. speed
+            wait(1)
+            ApplySpeedButton.Text = "Apply Speed"
+        else
+            SpeedInput.Text = "Error! (1-1000)"
+            wait(1)
+            SpeedInput.Text = "16"
+        end
+    end
+end)
+
+-- Function to apply entered jump power
+ApplyJumpButton.MouseButton1Click:Connect(function()
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        local jumpPower = tonumber(JumpInput.Text)
+        if jumpPower and jumpPower >= 0 and jumpPower <= 1000 then
+            player.Character.Humanoid.JumpPower = jumpPower
+            ApplyJumpButton.Text = "Applied: " .. jumpPower
+            wait(1)
+            ApplyJumpButton.Text = "Apply Jump"
+        else
+            JumpInput.Text = "Error! (0-1000)"
+            wait(1)
+            JumpInput.Text = "50"
+        end
+    end
+end)
+
+-- Function to delete GUI
+DeleteGuiButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- Function to hide/show GUI
+ToggleGuiButton.MouseButton1Click:Connect(function()
+    Frame.Visible = not Frame.Visible
+    if Frame.Visible then
+        ToggleGuiButton.Text = "CLOSE"
+        ToggleGuiButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+    else
+        ToggleGuiButton.Text = "MENU"
+        ToggleGuiButton.BackgroundColor3 = Color3.fromRGB(70, 130, 255)
+    end
+end)
+
+-- Make GUI draggable
+local dragging = false
+local dragStart = nil
+local startPos = nil
+
+Frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = Frame.Position
+    end
+end)
+
+Frame.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        -- Toggle button stays in place (top-left corner)
+    end
+end)
+
+Frame.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
