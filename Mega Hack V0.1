@@ -295,18 +295,18 @@ ToggleButtonStroke.Parent = ToggleGuiButton
 
 -- No corner radius for square button
 
--- Version Label (bottom-right corner)
+-- Version Label (bottom-right corner, 5x larger)
 local VersionLabel = Instance.new("TextLabel")
 VersionLabel.Parent = ScreenGui
-VersionLabel.Size = UDim2.new(0, 40, 0, 15)
-VersionLabel.Position = UDim2.new(1, -45, 1, -20) -- Bottom-right corner
+VersionLabel.Size = UDim2.new(0, 200, 0, 75) -- Original: 40x15, now 5x larger
+VersionLabel.Position = UDim2.new(1, -205, 1, -80) -- Adjusted to keep in bottom-right
 VersionLabel.BackgroundTransparency = 1
 VersionLabel.Text = "V0.1"
 VersionLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-VersionLabel.TextSize = 10
+VersionLabel.TextSize = 50 -- Original: 10, now 5x larger
 VersionLabel.TextXAlignment = Enum.TextXAlignment.Right
 VersionLabel.ZIndex = 12
-VersionLabel.Font = Enum.Font.Gotham
+VersionLabel.Font = Enum.Font.GothamBold -- Made bold for better visibility
 
 -- Function to apply entered speed
 ApplySpeedButton.MouseButton1Click:Connect(function()
