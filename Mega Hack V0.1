@@ -44,6 +44,63 @@ local function findFreePosition()
     -- Search for free space in grid
     for row = 0, 10 do
         for col = 0, 10 do
+ “
+
+System: It looks like the script was cut off in your request. I'll provide the complete updated script with the following changes:
+1. **Remove Speed and Jump Power Limits**: The range checks (`speed > 0 and speed <= 1000` and `jumpPower >= 0 and jumpPower <= 1000`) in the `ApplySpeedButton` and `ApplyJumpButton` click handlers will be removed, allowing any positive number for speed and any non-negative number for jump power (with validation for valid numbers).
+2. **Increase VersionLabel Size**: The "V0.1" text (VersionLabel) will be doubled in size from the previous update (from 200x75 pixels, TextSize 50 to 400x150 pixels, TextSize 100) to make it 10x the original size (original: 40x15 pixels, TextSize 10). The position will be adjusted to keep it in the bottom-right corner.
+3. **Preserve Previous Changes**: The GUI title remains "Mega Hack" as per your earlier request.
+4. No new pages or unrelated changes will be added, as requested.
+
+Here’s the complete updated script:
+
+<xaiArtifact artifact_id="ce91ee56-cbdd-4761-a90b-f1806524d79f" artifact_version_id="9342669f-644c-44d5-ab59-4107e58589e5" title="SpeedToggleGui.lua" contentType="text/lua">
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- GUI Settings
+local GUI_WIDTH = 220
+local GUI_HEIGHT = 280
+local GUI_SPACING = 20 -- Spacing between GUIs
+
+-- Function to find free position
+local function findFreePosition()
+    local screenSize = workspace.CurrentCamera.ViewportSize
+    local occupiedPositions = {}
+    
+    -- Collect all occupied positions
+    for _, gui in ipairs(player.PlayerGui:GetChildren()) do
+        if gui:IsA("ScreenGui") and gui:GetAttribute("IsSpeedGUI") then
+            local frame = gui:FindFirstChild("MainFrame")
+            if frame then
+                local pos = frame.Position
+                table.insert(occupiedPositions, {
+                    X = pos.X.Scale * screenSize.X + pos.X.Offset,
+                    Y = pos.Y.Scale * screenSize.Y + pos.Y.Offset
+                })
+            end
+        end
+    end
+    
+    -- Search for free position
+    local startX = 50
+    local startY = 50
+    local currentX = startX
+    local currentY = startY
+    
+    local function isPositionFree(x, y)
+        for _, pos in ipairs(occupiedPositions) do
+            if math.abs(pos.X - x) < GUI_WIDTH + GUI_SPACING and 
+               math.abs(pos.Y - y) < GUI_HEIGHT + GUI_SPACING then
+                return false
+            end
+        end
+        return true
+    end
+    
+    -- Search for free space in grid
+    for row = 0, 10 do
+        for col = 0, 10 do
             currentX = startX + col * (GUI_WIDTH + GUI_SPACING)
             currentY = startY + row * (GUI_HEIGHT + GUI_SPACING)
             
@@ -295,30 +352,30 @@ ToggleButtonStroke.Parent = ToggleGuiButton
 
 -- No corner radius for square button
 
--- Version Label (bottom-right corner, 5x larger)
+-- Version Label (bottom-right corner, 10x larger)
 local VersionLabel = Instance.new("TextLabel")
 VersionLabel.Parent = ScreenGui
-VersionLabel.Size = UDim2.new(0, 200, 0, 75) -- Original: 40x15, now 5x larger
-VersionLabel.Position = UDim2.new(1, -205, 1, -80) -- Adjusted to keep in bottom-right
+VersionLabel.Size = UDim2.new(0, 400, 0, 150) -- Original: 40x15, now 10x larger
+VersionLabel.Position = UDim2.new(1, -405, 1, -155) -- Adjusted to keep in bottom-right
 VersionLabel.BackgroundTransparency = 1
 VersionLabel.Text = "V0.1"
 VersionLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-VersionLabel.TextSize = 50 -- Original: 10, now 5x larger
+VersionLabel.TextSize = 100 -- Original: 10, now 10x larger
 VersionLabel.TextXAlignment = Enum.TextXAlignment.Right
 VersionLabel.ZIndex = 12
-VersionLabel.Font = Enum.Font.GothamBold -- Made bold for better visibility
+VersionLabel.Font = Enum.Font.GothamBold
 
 -- Function to apply entered speed
 ApplySpeedButton.MouseButton1Click:Connect(function()
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         local speed = tonumber(SpeedInput.Text)
-        if speed and speed > 0 and speed <= 1000 then
+        if speed and speed > 0 then
             player.Character.Humanoid.WalkSpeed = speed
             ApplySpeedButton.Text = "Applied: " .. speed
             wait(1)
             ApplySpeedButton.Text = "Apply Speed"
         else
-            SpeedInput.Text = "Error! (1-1000)"
+            SpeedInput.Text = "Error! (>0)"
             wait(1)
             SpeedInput.Text = "16"
         end
@@ -329,13 +386,13 @@ end)
 ApplyJumpButton.MouseButton1Click:Connect(function()
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         local jumpPower = tonumber(JumpInput.Text)
-        if jumpPower and jumpPower >= 0 and jumpPower <= 1000 then
+        if jumpPower and jumpPower >= 0 then
             player.Character.Humanoid.JumpPower = jumpPower
             ApplyJumpButton.Text = "Applied: " .. jumpPower
             wait(1)
             ApplyJumpButton.Text = "Apply Jump"
         else
-            JumpInput.Text = "Error! (0-1000)"
+            JumpInput.Text = "Error! (>=0)"
             wait(1)
             JumpInput.Text = "50"
         end
