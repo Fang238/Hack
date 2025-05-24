@@ -312,13 +312,13 @@ VersionLabel.Font = Enum.Font.Gotham
 ApplySpeedButton.MouseButton1Click:Connect(function()
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         local speed = tonumber(SpeedInput.Text)
-        if speed and speed > 0 and speed <= 1000 then
+        if speed then
             player.Character.Humanoid.WalkSpeed = speed
             ApplySpeedButton.Text = "Applied: " .. speed
             wait(1)
             ApplySpeedButton.Text = "Apply Speed"
         else
-            SpeedInput.Text = "Error! (1-1000)"
+            SpeedInput.Text = "Error! Invalid input"
             wait(1)
             SpeedInput.Text = "16"
         end
@@ -329,13 +329,13 @@ end)
 ApplyJumpButton.MouseButton1Click:Connect(function()
     if player.Character and player.Character:FindFirstChild("Humanoid") then
         local jumpPower = tonumber(JumpInput.Text)
-        if jumpPower and jumpPower >= 0 and jumpPower <= 1000 then
+        if jumpPower then
             player.Character.Humanoid.JumpPower = jumpPower
             ApplyJumpButton.Text = "Applied: " .. jumpPower
             wait(1)
             ApplyJumpButton.Text = "Apply Jump"
         else
-            JumpInput.Text = "Error! (0-1000)"
+            JumpInput.Text = "Error! Invalid input"
             wait(1)
             JumpInput.Text = "50"
         end
