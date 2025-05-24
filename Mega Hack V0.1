@@ -124,7 +124,7 @@ TitleLabel.Parent = Frame
 TitleLabel.Size = UDim2.new(1, -20, 0, 25)
 TitleLabel.Position = UDim2.new(0, 10, 0, 5)
 TitleLabel.BackgroundTransparency = 1
-TitleLabel.Text = "Character Control"
+TitleLabel.Text = "Mega Hack"
 TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TitleLabel.TextSize = 16
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Center
@@ -295,6 +295,19 @@ ToggleButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 ToggleButtonStroke.Parent = ToggleGuiButton
 
 -- No corner radius for square button
+
+-- Version Label (bottom-right corner)
+local VersionLabel = Instance.new("TextLabel")
+VersionLabel.Parent = ScreenGui
+VersionLabel.Size = UDim2.new(0, 40, 0, 15)
+VersionLabel.Position = UDim2.new(1, -45, 1, -20) -- Bottom-right corner
+VersionLabel.BackgroundTransparency = 1
+VersionLabel.Text = "V0.1"
+VersionLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+VersionLabel.TextSize = 10
+VersionLabel.TextXAlignment = Enum.TextXAlignment.Right
+VersionLabel.ZIndex = 12
+VersionLabel.Font = Enum.Font.Gotham
 
 -- Function to apply entered speed
 ApplySpeedButton.MouseButton1Click:Connect(function()
