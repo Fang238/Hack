@@ -5,8 +5,9 @@ local RunService = game:GetService("RunService")
 
 -- GUI Settings
 local GUI_WIDTH = 220
-local GUI_HEIGHT = 460
-local GUI_SPACING = 20
+local GUI_HEIGHT = 620
+local GUI_SPACING = 14
+local GUI_PADDING = 12
 
 -- Fly Variables
 local flying = false
@@ -101,8 +102,8 @@ ScreenGui:SetAttribute("IsSpeedGUI", true)
 local Frame = Instance.new("Frame")
 Frame.Name = "MainFrame"
 Frame.Parent = ScreenGui
-Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 45)
-Frame.BackgroundTransparency = 0.15
+Frame.BackgroundColor3 = Color3.fromRGB(30, 40, 80)
+Frame.BackgroundTransparency = 0.2
 Frame.Position = UDim2.new(0.5, -GUI_WIDTH/2, 0.5, -GUI_HEIGHT/2)
 Frame.Size = UDim2.new(0, GUI_WIDTH, 0, GUI_HEIGHT)
 Frame.Visible = false
@@ -110,20 +111,20 @@ Frame.ZIndex = 10
 Frame.BorderSizePixel = 0
 
 local FrameUICorner = Instance.new("UICorner")
-FrameUICorner.CornerRadius = UDim.new(0, 12)
+FrameUICorner.CornerRadius = UDim.new(0, 8)
 FrameUICorner.Parent = Frame
 
 local FrameUIStroke = Instance.new("UIStroke")
-FrameUIStroke.Thickness = 2
-FrameUIStroke.Color = Color3.fromRGB(255, 255, 255)
+FrameUIStroke.Thickness = 1.5
+FrameUIStroke.Color = Color3.fromRGB(220, 220, 255)
 FrameUIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 FrameUIStroke.Parent = Frame
 
 -- GUI Title
 local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Parent = Frame
-TitleLabel.Size = UDim2.new(1, -20, 0, 25)
-TitleLabel.Position = UDim2.new(0, 10, 0, 5)
+TitleLabel.Size = UDim2.new(1, -2*GUI_PADDING, 0, 25)
+TitleLabel.Position = UDim2.new(0, GUI_PADDING, 0, 10)
 TitleLabel.BackgroundTransparency = 1
 TitleLabel.Text = "Mega Hack"
 TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -135,11 +136,11 @@ TitleLabel.Font = Enum.Font.GothamBold
 -- Walk Speed Label
 local SpeedLabel = Instance.new("TextLabel")
 SpeedLabel.Parent = Frame
-SpeedLabel.Size = UDim2.new(1, -20, 0, 20)
-SpeedLabel.Position = UDim2.new(0, 10, 0, 35)
+SpeedLabel.Size = UDim2.new(1, -2*GUI_PADDING, 0, 20)
+SpeedLabel.Position = UDim2.new(0, GUI_PADDING, 0, 39)
 SpeedLabel.BackgroundTransparency = 1
 SpeedLabel.Text = "Walk Speed:"
-SpeedLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+SpeedLabel.TextColor3 = Color3.fromRGB(220, 220, 255)
 SpeedLabel.TextSize = 13
 SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
 SpeedLabel.ZIndex = 11
@@ -148,8 +149,8 @@ SpeedLabel.Font = Enum.Font.Gotham
 -- Speed Input TextBox
 local SpeedInput = Instance.new("TextBox")
 SpeedInput.Parent = Frame
-SpeedInput.Size = UDim2.new(1, -20, 0, 30)
-SpeedInput.Position = UDim2.new(0, 10, 0, 60)
+SpeedInput.Size = UDim2.new(1, -2*GUI_PADDING, 0, 30)
+SpeedInput.Position = UDim2.new(0, GUI_PADDING, 0, 63)
 SpeedInput.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
 SpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 SpeedInput.Text = "16"
@@ -165,19 +166,19 @@ SpeedInputCorner.Parent = SpeedInput
 
 local SpeedInputStroke = Instance.new("UIStroke")
 SpeedInputStroke.Thickness = 1
-SpeedInputStroke.Color = Color3.fromRGB(255, 255, 255)
+SpeedInputStroke.Color = Color3.fromRGB(220, 220, 255)
 SpeedInputStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 SpeedInputStroke.Parent = SpeedInput
 
 -- Apply Speed Button
 local ApplySpeedButton = Instance.new("TextButton")
 ApplySpeedButton.Parent = Frame
-ApplySpeedButton.Size = UDim2.new(1, -20, 0, 35)
-ApplySpeedButton.Position = UDim2.new(0, 10, 0, 95)
+ApplySpeedButton.Size = UDim2.new(1, -2*GUI_PADDING, 0, 35)
+ApplySpeedButton.Position = UDim2.new(0, GUI_PADDING, 0, 97)
 ApplySpeedButton.Text = "Apply Speed"
 ApplySpeedButton.BackgroundColor3 = Color3.fromRGB(40, 120, 255)
 ApplySpeedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ApplySpeedButton.TextSize = 14
+ApplySpeedButton.TextSize = 13
 ApplySpeedButton.ZIndex = 11
 ApplySpeedButton.BorderSizePixel = 0
 ApplySpeedButton.Font = Enum.Font.GothamSemibold
@@ -188,18 +189,18 @@ SpeedButtonCorner.Parent = ApplySpeedButton
 
 local SpeedButtonStroke = Instance.new("UIStroke")
 SpeedButtonStroke.Thickness = 1
-SpeedButtonStroke.Color = Color3.fromRGB(255, 255, 255)
+SpeedButtonStroke.Color = Color3.fromRGB(220, 220, 255)
 SpeedButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 SpeedButtonStroke.Parent = ApplySpeedButton
 
 -- Jump Power Label
 local JumpLabel = Instance.new("TextLabel")
 JumpLabel.Parent = Frame
-JumpLabel.Size = UDim2.new(1, -20, 0, 20)
-JumpLabel.Position = UDim2.new(0, 10, 0, 140)
+JumpLabel.Size = UDim2.new(1, -2*GUI_PADDING, 0, 20)
+JumpLabel.Position = UDim2.new(0, GUI_PADDING, 0, 141)
 JumpLabel.BackgroundTransparency = 1
 JumpLabel.Text = "Jump Power:"
-JumpLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+JumpLabel.TextColor3 = Color3.fromRGB(220, 220, 255)
 JumpLabel.TextSize = 13
 JumpLabel.TextXAlignment = Enum.TextXAlignment.Left
 JumpLabel.ZIndex = 11
@@ -208,8 +209,8 @@ JumpLabel.Font = Enum.Font.Gotham
 -- Jump Power Input TextBox
 local JumpInput = Instance.new("TextBox")
 JumpInput.Parent = Frame
-JumpInput.Size = UDim2.new(1, -20, 0, 30)
-JumpInput.Position = UDim2.new(0, 10, 0, 165)
+JumpInput.Size = UDim2.new(1, -2*GUI_PADDING, 0, 30)
+JumpInput.Position = UDim2.new(0, GUI_PADDING, 0, 165)
 JumpInput.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
 JumpInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 JumpInput.Text = "50"
@@ -225,19 +226,19 @@ JumpInputCorner.Parent = JumpInput
 
 local JumpInputStroke = Instance.new("UIStroke")
 JumpInputStroke.Thickness = 1
-JumpInputStroke.Color = Color3.fromRGB(255, 255, 255)
+JumpInputStroke.Color = Color3.fromRGB(220, 220, 255)
 JumpInputStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 JumpInputStroke.Parent = JumpInput
 
 -- Apply Jump Power Button
 local ApplyJumpButton = Instance.new("TextButton")
 ApplyJumpButton.Parent = Frame
-ApplyJumpButton.Size = UDim2.new(1, -20, 0, 35)
-ApplyJumpButton.Position = UDim2.new(0, 10, 0, 200)
+ApplyJumpButton.Size = UDim2.new(1, -2*GUI_PADDING, 0, 35)
+ApplyJumpButton.Position = UDim2.new(0, GUI_PADDING, 0, 199)
 ApplyJumpButton.Text = "Apply Jump"
 ApplyJumpButton.BackgroundColor3 = Color3.fromRGB(40, 200, 120)
 ApplyJumpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ApplyJumpButton.TextSize = 14
+ApplyJumpButton.TextSize = 13
 ApplyJumpButton.ZIndex = 11
 ApplyJumpButton.BorderSizePixel = 0
 ApplyJumpButton.Font = Enum.Font.GothamSemibold
@@ -248,18 +249,18 @@ JumpButtonCorner.Parent = ApplyJumpButton
 
 local JumpButtonStroke = Instance.new("UIStroke")
 JumpButtonStroke.Thickness = 1
-JumpButtonStroke.Color = Color3.fromRGB(255, 255, 255)
+JumpButtonStroke.Color = Color3.fromRGB(220, 220, 255)
 JumpButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 JumpButtonStroke.Parent = ApplyJumpButton
 
 -- Fly Speed Label
 local FlySpeedLabel = Instance.new("TextLabel")
 FlySpeedLabel.Parent = Frame
-FlySpeedLabel.Size = UDim2.new(1, -20, 0, 20)
-FlySpeedLabel.Position = UDim2.new(0, 10, 0, 245)
+FlySpeedLabel.Size = UDim2.new(1, -2*GUI_PADDING, 0, 20)
+FlySpeedLabel.Position = UDim2.new(0, GUI_PADDING, 0, 243)
 FlySpeedLabel.BackgroundTransparency = 1
 FlySpeedLabel.Text = "Fly Speed:"
-FlySpeedLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+FlySpeedLabel.TextColor3 = Color3.fromRGB(220, 220, 255)
 FlySpeedLabel.TextSize = 13
 FlySpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
 FlySpeedLabel.ZIndex = 11
@@ -268,8 +269,8 @@ FlySpeedLabel.Font = Enum.Font.Gotham
 -- Fly Speed Input TextBox
 local FlySpeedInput = Instance.new("TextBox")
 FlySpeedInput.Parent = Frame
-FlySpeedInput.Size = UDim2.new(1, -20, 0, 30)
-FlySpeedInput.Position = UDim2.new(0, 10, 0, 270)
+FlySpeedInput.Size = UDim2.new(1, -2*GUI_PADDING, 0, 30)
+FlySpeedInput.Position = UDim2.new(0, GUI_PADDING, 0, 267)
 FlySpeedInput.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
 FlySpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 FlySpeedInput.Text = "50"
@@ -285,19 +286,19 @@ FlySpeedInputCorner.Parent = FlySpeedInput
 
 local FlySpeedInputStroke = Instance.new("UIStroke")
 FlySpeedInputStroke.Thickness = 1
-FlySpeedInputStroke.Color = Color3.fromRGB(255, 255, 255)
+FlySpeedInputStroke.Color = Color3.fromRGB(220, 220, 255)
 FlySpeedInputStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 FlySpeedInputStroke.Parent = FlySpeedInput
 
 -- Apply Fly Speed Button
 local ApplyFlySpeedButton = Instance.new("TextButton")
 ApplyFlySpeedButton.Parent = Frame
-ApplyFlySpeedButton.Size = UDim2.new(1, -20, 0, 35)
-ApplyFlySpeedButton.Position = UDim2.new(0, 10, 0, 305)
+ApplyFlySpeedButton.Size = UDim2.new(1, -2*GUI_PADDING, 0, 35)
+ApplyFlySpeedButton.Position = UDim2.new(0, GUI_PADDING, 0, 301)
 ApplyFlySpeedButton.Text = "Apply Fly Speed"
 ApplyFlySpeedButton.BackgroundColor3 = Color3.fromRGB(120, 80, 255)
 ApplyFlySpeedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ApplyFlySpeedButton.TextSize = 14
+ApplyFlySpeedButton.TextSize = 13
 ApplyFlySpeedButton.ZIndex = 11
 ApplyFlySpeedButton.BorderSizePixel = 0
 ApplyFlySpeedButton.Font = Enum.Font.GothamSemibold
@@ -308,19 +309,116 @@ FlySpeedButtonCorner.Parent = ApplyFlySpeedButton
 
 local FlySpeedButtonStroke = Instance.new("UIStroke")
 FlySpeedButtonStroke.Thickness = 1
-FlySpeedButtonStroke.Color = Color3.fromRGB(255, 255, 255)
+FlySpeedButtonStroke.Color = Color3.fromRGB(220, 220, 255)
 FlySpeedButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 FlySpeedButtonStroke.Parent = ApplyFlySpeedButton
+
+-- Currency Name Label
+local CurrencyNameLabel = Instance.new("TextLabel")
+CurrencyNameLabel.Parent = Frame
+CurrencyNameLabel.Size = UDim2.new(1, -2*GUI_PADDING, 0, 20)
+CurrencyNameLabel.Position = UDim2.new(0, GUI_PADDING, 0, 345)
+CurrencyNameLabel.BackgroundTransparency = 1
+CurrencyNameLabel.Text = "Currency Name:"
+CurrencyNameLabel.TextColor3 = Color3.fromRGB(220, 220, 255)
+CurrencyNameLabel.TextSize = 13
+CurrencyNameLabel.TextXAlignment = Enum.TextXAlignment.Left
+CurrencyNameLabel.ZIndex = 11
+CurrencyNameLabel.Font = Enum.Font.Gotham
+
+-- Currency Name Input TextBox
+local CurrencyNameInput = Instance.new("TextBox")
+CurrencyNameInput.Parent = Frame
+CurrencyNameInput.Size = UDim2.new(1, -2*GUI_PADDING, 0, 30)
+CurrencyNameInput.Position = UDim2.new(0, GUI_PADDING, 0, 369)
+CurrencyNameInput.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+CurrencyNameInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+CurrencyNameInput.Text = ""
+CurrencyNameInput.PlaceholderText = "Enter currency name"
+CurrencyNameInput.TextSize = 14
+CurrencyNameInput.ZIndex = 11
+CurrencyNameInput.BorderSizePixel = 0
+CurrencyNameInput.Font = Enum.Font.Gotham
+
+local CurrencyNameInputCorner = Instance.new("UICorner")
+CurrencyNameInputCorner.CornerRadius = UDim.new(0, 6)
+CurrencyNameInputCorner.Parent = CurrencyNameInput
+
+local CurrencyNameInputStroke = Instance.new("UIStroke")
+CurrencyNameInputStroke.Thickness = 1
+CurrencyNameInputStroke.Color = Color3.fromRGB(220, 220, 255)
+CurrencyNameInputStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+CurrencyNameInputStroke.Parent = CurrencyNameInput
+
+-- Currency Amount Label
+local CurrencyAmountLabel = Instance.new("TextLabel")
+CurrencyAmountLabel.Parent = Frame
+CurrencyAmountLabel.Size = UDim2.new(1, -2*GUI_PADDING, 0, 20)
+CurrencyAmountLabel.Position = UDim2.new(0, GUI_PADDING, 0, 413)
+CurrencyAmountLabel.BackgroundTransparency = 1
+CurrencyAmountLabel.Text = "Currency Amount:"
+CurrencyAmountLabel.TextColor3 = Color3.fromRGB(220, 220, 255)
+CurrencyAmountLabel.TextSize = 13
+CurrencyAmountLabel.TextXAlignment = Enum.TextXAlignment.Left
+CurrencyAmountLabel.ZIndex = 11
+CurrencyAmountLabel.Font = Enum.Font.Gotham
+
+-- Currency Amount Input TextBox
+local CurrencyAmountInput = Instance.new("TextBox")
+CurrencyAmountInput.Parent = Frame
+CurrencyAmountInput.Size = UDim2.new(1, -2*GUI_PADDING, 0, 30)
+CurrencyAmountInput.Position = UDim2.new(0, GUI_PADDING, 0, 437)
+CurrencyAmountInput.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+CurrencyAmountInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+CurrencyAmountInput.Text = "100"
+CurrencyAmountInput.PlaceholderText = "Enter amount"
+CurrencyAmountInput.TextSize = 14
+CurrencyAmountInput.ZIndex = 11
+CurrencyAmountInput.BorderSizePixel = 0
+CurrencyAmountInput.Font = Enum.Font.Gotham
+
+local CurrencyAmountInputCorner = Instance.new("UICorner")
+CurrencyAmountInputCorner.CornerRadius = UDim.new(0, 6)
+CurrencyAmountInputCorner.Parent = CurrencyAmountInput
+
+local CurrencyAmountInputStroke = Instance.new("UIStroke")
+CurrencyAmountInputStroke.Thickness = 1
+CurrencyAmountInputStroke.Color = Color3.fromRGB(220, 220, 255)
+CurrencyAmountInputStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+CurrencyAmountInputStroke.Parent = CurrencyAmountInput
+
+-- Add Currency Button
+local AddCurrencyButton = Instance.new("TextButton")
+AddCurrencyButton.Parent = Frame
+AddCurrencyButton.Size = UDim2.new(1, -2*GUI_PADDING, 0, 35)
+AddCurrencyButton.Position = UDim2.new(0, GUI_PADDING, 0, 471)
+AddCurrencyButton.Text = "Add Currency"
+AddCurrencyButton.BackgroundColor3 = Color3.fromRGB(255, 180, 40)
+AddCurrencyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+AddCurrencyButton.TextSize = 13
+AddCurrencyButton.ZIndex = 11
+AddCurrencyButton.BorderSizePixel = 0
+AddCurrencyButton.Font = Enum.Font.GothamSemibold
+
+local AddCurrencyButtonCorner = Instance.new("UICorner")
+AddCurrencyButtonCorner.CornerRadius = UDim.new(0, 8)
+AddCurrencyButtonCorner.Parent = AddCurrencyButton
+
+local AddCurrencyButtonStroke = Instance.new("UIStroke")
+AddCurrencyButtonStroke.Thickness = 1
+AddCurrencyButtonStroke.Color = Color3.fromRGB(220, 220, 255)
+AddCurrencyButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+AddCurrencyButtonStroke.Parent = AddCurrencyButton
 
 -- Fly Button
 local FlyButton = Instance.new("TextButton")
 FlyButton.Parent = Frame
-FlyButton.Size = UDim2.new(1, -20, 0, 35)
-FlyButton.Position = UDim2.new(0, 10, 0, 350)
+FlyButton.Size = UDim2.new(1, -2*GUI_PADDING, 0, 35)
+FlyButton.Position = UDim2.new(0, GUI_PADDING, 0, 515)
 FlyButton.Text = "Enable Fly"
 FlyButton.BackgroundColor3 = Color3.fromRGB(160, 80, 255)
 FlyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-FlyButton.TextSize = 14
+FlyButton.TextSize = 13
 FlyButton.ZIndex = 11
 FlyButton.BorderSizePixel = 0
 FlyButton.Font = Enum.Font.GothamSemibold
@@ -331,15 +429,15 @@ FlyButtonCorner.Parent = FlyButton
 
 local FlyButtonStroke = Instance.new("UIStroke")
 FlyButtonStroke.Thickness = 1
-FlyButtonStroke.Color = Color3.fromRGB(255, 255, 255)
+FlyButtonStroke.Color = Color3.fromRGB(220, 220, 255)
 FlyButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 FlyButtonStroke.Parent = FlyButton
 
 -- Delete GUI Button
 local DeleteGuiButton = Instance.new("TextButton")
 DeleteGuiButton.Parent = Frame
-DeleteGuiButton.Size = UDim2.new(1, -20, 0, 35)
-DeleteGuiButton.Position = UDim2.new(0, 10, 0, 395)
+DeleteGuiButton.Size = UDim2.new(1, -2*GUI_PADDING, 0, 35)
+DeleteGuiButton.Position = UDim2.new(0, GUI_PADDING, 0, 559)
 DeleteGuiButton.Text = "Close Script"
 DeleteGuiButton.BackgroundColor3 = Color3.fromRGB(200, 80, 80)
 DeleteGuiButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -354,7 +452,7 @@ DeleteButtonCorner.Parent = DeleteGuiButton
 
 local DeleteButtonStroke = Instance.new("UIStroke")
 DeleteButtonStroke.Thickness = 1
-DeleteButtonStroke.Color = Color3.fromRGB(255, 255, 255)
+DeleteButtonStroke.Color = Color3.fromRGB(220, 220, 255)
 DeleteButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 DeleteButtonStroke.Parent = DeleteGuiButton
 
@@ -373,7 +471,7 @@ ToggleGuiButton.Font = Enum.Font.GothamBold
 
 local ToggleButtonStroke = Instance.new("UIStroke")
 ToggleButtonStroke.Thickness = 2
-ToggleButtonStroke.Color = Color3.fromRGB(255, 255, 255)
+ToggleButtonStroke.Color = Color3.fromRGB(220, 220, 255)
 ToggleButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 ToggleButtonStroke.Parent = ToggleGuiButton
 
@@ -383,7 +481,7 @@ VersionLabel.Parent = ScreenGui
 VersionLabel.Size = UDim2.new(0, 40, 0, 15)
 VersionLabel.Position = UDim2.new(1, -45, 1, -20)
 VersionLabel.BackgroundTransparency = 1
-VersionLabel.Text = "V0.1"
+VersionLabel.Text = "V0.3"
 VersionLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
 VersionLabel.TextSize = 10
 VersionLabel.TextXAlignment = Enum.TextXAlignment.Right
@@ -491,7 +589,7 @@ local function updateFlyMovement()
     
     -- Smooth velocity interpolation
     local deltaTime = RunService.Heartbeat:Wait()
-    local smoothingFactor = math.min(deltaTime * 10, 1) -- Increased smoothing for responsiveness
+    local smoothingFactor = math.min(deltaTime * 10, 1)
     currentVelocity = lerpVector3(currentVelocity, targetVelocity, smoothingFactor)
     
     -- Apply velocity
@@ -567,6 +665,51 @@ ApplyFlySpeedButton.MouseButton1Click:Connect(function()
         FlySpeedInput.Text = "Error! Invalid input"
         wait(1)
         FlySpeedInput.Text = "50"
+    end
+end)
+
+-- Function to add currency
+AddCurrencyButton.MouseButton1Click:Connect(function()
+    local currencyName = CurrencyNameInput.Text
+    local currencyAmount = tonumber(CurrencyAmountInput.Text)
+    
+    if not currencyName or currencyName == "" then
+        CurrencyNameInput.Text = "Error! Enter name"
+        wait(1)
+        CurrencyNameInput.Text = ""
+        return
+    end
+    
+    if not currencyAmount then
+        CurrencyAmountInput.Text = "Error! Invalid amount"
+        wait(1)
+        CurrencyAmountInput.Text = "100"
+        return
+    end
+    
+    local currencyStat = nil
+    
+    -- Check leaderstats first
+    local leaderstats = player:FindFirstChild("leaderstats")
+    if leaderstats then
+        currencyStat = leaderstats:FindFirstChild(currencyName)
+    end
+    
+    -- If not found in leaderstats, check player directly
+    if not currencyStat then
+        currencyStat = player:FindFirstChild(currencyName)
+    end
+    
+    -- Update currency if found and valid
+    if currencyStat and (currencyStat:IsA("IntValue") or currencyStat:IsA("NumberValue")) then
+        currencyStat.Value = currencyStat.Value + currencyAmount
+        AddCurrencyButton.Text = "Added: " .. currencyAmount
+        wait(1)
+        AddCurrencyButton.Text = "Add Currency"
+    else
+        CurrencyNameInput.Text = "Error! Currency not found"
+        wait(1)
+        CurrencyNameInput.Text = ""
     end
 end)
 
