@@ -16,7 +16,7 @@ local bodyVelocity = nil
 local currentVelocity = Vector3.new(0, 0, 0)
 local targetVelocity = Vector3.new(0, 0, 0)
 
--- Function to find free position
+-- Function to find free position (оставляем для возможного использования в будущем)
 local function findFreePosition()
     local screenSize = workspace.CurrentCamera.ViewportSize
     local occupiedPositions = {}
@@ -104,7 +104,7 @@ Frame.Name = "MainFrame"
 Frame.Parent = ScreenGui
 Frame.BackgroundColor3 = Color3.fromRGB(30, 40, 80)
 Frame.BackgroundTransparency = 0.2
-Frame.Position = UDim2.new(0.5, -GUI_WIDTH/2, 0.5, -GUI_HEIGHT/2)
+Frame.Position = UDim2.new(0.5, -GUI_WIDTH/2, 0.5, -GUI_HEIGHT/2) -- Центрируем GUI
 Frame.Size = UDim2.new(0, GUI_WIDTH, 0, GUI_HEIGHT)
 Frame.Visible = false
 Frame.ZIndex = 10
@@ -193,28 +193,28 @@ SpeedButtonStroke.Color = Color3.fromRGB(220, 220, 255)
 SpeedButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 SpeedButtonStroke.Parent = ApplySpeedButton
 
--- Jump Power Label
+-- Jump Height Label
 local JumpLabel = Instance.new("TextLabel")
 JumpLabel.Parent = Frame
 JumpLabel.Size = UDim2.new(1, -2*GUI_PADDING, 0, 20)
 JumpLabel.Position = UDim2.new(0, GUI_PADDING, 0, 141)
 JumpLabel.BackgroundTransparency = 1
-JumpLabel.Text = "Jump Power:"
+JumpLabel.Text = "Jump Height:"
 JumpLabel.TextColor3 = Color3.fromRGB(220, 220, 255)
 JumpLabel.TextSize = 13
 JumpLabel.TextXAlignment = Enum.TextXAlignment.Left
 JumpLabel.ZIndex = 11
 JumpLabel.Font = Enum.Font.Gotham
 
--- Jump Power Input TextBox
+-- Jump Height Input TextBox
 local JumpInput = Instance.new("TextBox")
 JumpInput.Parent = Frame
 JumpInput.Size = UDim2.new(1, -2*GUI_PADDING, 0, 30)
 JumpInput.Position = UDim2.new(0, GUI_PADDING, 0, 165)
 JumpInput.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
 JumpInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-JumpInput.Text = "50"
-JumpInput.PlaceholderText = "Enter jump power"
+JumpInput.Text = "7.2"
+JumpInput.PlaceholderText = "Enter jump height"
 JumpInput.TextSize = 14
 JumpInput.ZIndex = 11
 JumpInput.BorderSizePixel = 0
@@ -230,7 +230,7 @@ JumpInputStroke.Color = Color3.fromRGB(220, 220, 255)
 JumpInputStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 JumpInputStroke.Parent = JumpInput
 
--- Apply Jump Power Button
+-- Apply Jump Height Button
 local ApplyJumpButton = Instance.new("TextButton")
 ApplyJumpButton.Parent = Frame
 ApplyJumpButton.Size = UDim2.new(1, -2*GUI_PADDING, 0, 35)
@@ -621,35 +621,52 @@ startFlyLoop()
 
 -- Function to apply entered speed
 ApplySpeedButton.MouseButton1Click:Connect(function()
-    if player.Character and player.Character:FindFirstChild("Humanoid") then
-        local speed = tonumber(SpeedInput.Text)
-        if speed then
-            player.Character.Humanoid.WalkSpeed = speed
-            ApplySpeedButton.Text = "Applied: " .. speed
-            wait(1)
-            ApplySpeedButton.Text = "Apply Speed"
-        else
-            SpeedInput.Text = "Error! Invalid input"
-            wait(1)
-            SpeedInput.Text = "16"
-        end
+    if not player.Character then
+        warn("Character is nil")
+        return
+    end
+    local humanoid = player.Character:FindFirstChild("Humanoid")
+    if not humanoid then
+        warn("Humanoid not found")
+        return
+    end
+    local speed = tonumber(SpeedInput.Text)
+    if speed then
+        humanoid.WalkSpeed = speed
+        ApplySpeedButton.Text = "Applied: " .. speed
+        wait(1)
+        ApplySpeedButton.Text = "Apply Speed"
+    else
+        SpeedInput.Text = "Error! Invalid input"
+        wait(1)
+        SpeedInput.Text = "16"
     end
 end)
 
--- Function to apply entered jump power
+-- Function to apply entered jump height
 ApplyJumpButton.MouseButton1Click:Connect(function()
-    if player.Character and player.Character:FindFirstChild("Humanoid") then
-        local jumpPower = tonumber(JumpInput.Text)
-        if jumpPower then
-            player.Character.Humanoid.JumpPower = jumpPower
-            ApplyJumpButton.Text = "Applied: " .. jumpPower
-            wait(1)
-            ApplyJumpButton.Text = "Apply Jump"
-        else
-            JumpInput.Text = "Error! Invalid input"
-            wait(1)
-            JumpInput.Text = "50"
-        end
+    if not player.Character then
+        warn("Character is nil")
+        return
+    end
+    local humanoid = player.Character:FindFirstChild("Humanoid")
+    if not humanoid then
+        warn("Humanoid not found")
+        return
+    end
+    local jumpHeight = tonumber(JumpInput.Text)
+    if jumpHeight then
+        humanoid.JumpHeight = jumpHeight
+        ApplyJumpButton.Text = "Applied: " .. jumpHeight
+        wait(1)
+        ApplyJumpButton.Text = "Apply Jump"
+        print("JumpHeight set to:", humanoid.JumpHeight)
+        wait(0.1)
+        print("JumpHeight after wait:", humanoid.JumpHeight)
+    else
+        JumpInput.Text = "Error! Invalid input"
+        wait(1)
+        JumpInput.Text = "7.2"
     end
 end)
 
